@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+        integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">FirsttApp</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="home.html">Car List</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="user.html">Users</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="index.html" id="btn-logout">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    <div class="container mt-5">
+        <table class="table table-striped table-bordered table-hover w-100 text-center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="user"></tbody>
+        </table>
+
+    </div>
+    <script src="https://pasitdev.com/jquery.js"></script>
+    <script>
+        $(function() {
+            
+            function getUser () {
+                $.post("https://iwtc.pasitdev.com/api/test", {type: 'get-user'}, (data) => {
+                    $("#user").empty()
+                    $.each(data.data, function(k, v){
+                        var login_now = localStorage.getItem("username");
+                        var delete_button = ``;
+                        if (v.username == login_now) {
+                            delete_button = `
+                                <button class= "btn btn-danger disabled" id="delete" data-id="${v.id}">delete</button>
+                            `;
+                        } else {
+                            delete_button = `
+                                <button class= "btn btn-danger" id="delete" data-id="${v.id}">delete</button>
+                            `;
+                        }
+                        $("#user").append(
+                          `
+                            <tr>
+                                <td>${v.id}</td>   
+                                <td>${v.name}</td>   
+                                <td>${v.username}</td>
+                                <td>
+                                    ${delete_button}
+                                </td>
+                                   
+                            </tr>
+                          `  
+                        );
+                    });
+                });
+            }
+            getUser();
+            $(document).on("click","#delete",function () {
+                const id = $(this).data();
+                const cf = confirm("Are you sure to delete user?");
+                const params = {
+                    type : 'delete-user',
+                    id : id.id
+                }
+                if (cf) {
+                    $.post("https://iwtc.pasitdev.com/api/test",params , function(data) {
+                        if (data.message == 'success') {
+                            getUser();
+                            alert("ลบข้อมูลสำเร็จ!");
+                        } else {
+                            alert("ลบข้อมูลไม่สำเร็จ!");
+                        }   
+                    });
+                }
+            });
+        });
+            
+    
+    </script>
+</body>
+
+</html>
