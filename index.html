@@ -37,8 +37,11 @@
             const password = passwordInput.value;
 
                 $.post("https://iwtc.pasitdev.com/api/test", params, (data) => {
+                    console.log(data);
                     if (data.message == 'success') {
                         localStorage.setItem("username", data.username)
+                        localStorage.setItem("user_id", data.user_id)
+                        console.log(data)
                         window.location.href = "home.html";
                     } else {
                         alert("Username " + username + " or Password " + password + " is incorrect. Would you like to register now?");

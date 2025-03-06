@@ -152,14 +152,15 @@
                         carNameElement.text(carNameElement.find('input').val());
                         alert("แก้ไขข้อมูลรถไม่สำเร็จ!");
                     }
-                });
+                }
+                );
             }
             $("#btn-logout").click(function() {
             localStorage.removeItem("username");
             window.location.href = "index.html";
+            })
             });
-            });
-            
+        
         
             
     

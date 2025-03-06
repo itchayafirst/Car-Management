@@ -48,8 +48,9 @@
             </thead>
             <tbody id="user"></tbody>
         </table>
-
     </div>
+    
+    
     <script src="https://pasitdev.com/jquery.js"></script>
     <script>
         $(function() {
@@ -60,13 +61,27 @@
                     $.each(data.data, function(k, v){
                         var login_now = localStorage.getItem("username");
                         var delete_button = ``;
-                        if (v.username == login_now) {
+                        var changepassword = ``;
+                        var edit = ``;
+                        if (v.username === login_now) {
                             delete_button = `
-                                <button class= "btn btn-danger disabled" id="delete" data-id="${v.id}">delete</button>
+                            <button class="btn btn-danger disabled" id="delete" data-id="${v.id}">delete</button>
+                            `;
+                            changepassword = `
+                            <button class="btn btn-primary" id="change" data-id="${v.id}">changepassword</button>
+                            `;
+                            edit = `
+                            <button class="btn btn-warning" id="edit" data-id="${v.id}">edit</button>
                             `;
                         } else {
-                            delete_button = `
-                                <button class= "btn btn-danger" id="delete" data-id="${v.id}">delete</button>
+                            delete_button = `  
+                            <button class="btn btn-danger " id="delete" data-id="${v.id}">delete</button>
+                            `;
+                            changepassword = `
+                            <button class="btn btn-primary disabled" id="change" data-id="${v.id}">changepassword</button>
+                            `;
+                            edit = `
+                            <button class="btn btn-warning disabled" id="edit" data-id="${v.id}">edit</button>
                             `;
                         }
                         $("#user").append(
@@ -77,6 +92,8 @@
                                 <td>${v.username}</td>
                                 <td>
                                     ${delete_button}
+                                    ${edit}
+                                    ${changepassword}
                                 </td>
                                    
                             </tr>
@@ -93,6 +110,7 @@
                     type : 'delete-user',
                     id : id.id
                 }
+                
                 if (cf) {
                     $.post("https://iwtc.pasitdev.com/api/test",params , function(data) {
                         if (data.message == 'success') {
@@ -104,7 +122,78 @@
                     });
                 }
             });
+            $(document).on("click", "#change", function() {
+                var params = {
+                  type: 'change-password'
+                  };
+                        $.post("https://iwtc.pasitdev.com/api/test?type=change-password&password=test&id=2",params , function(data) {
+                        window.location.href = "changepass.html";
+                          
+                    });
+        })
+        $(document).on("click", "#edit", function() {
+        const id = $(this).data('id');
+        const fullnameElement = $(`#name-${id}`);
+        const currentfullname = fullnameElement.text();
+        const usernameElement = $(`#username-${id}`);
+        const currentusername = usernameElement.text();
+        
+        // สร้าง input สำหรับแก้ไข
+        const input1 = $(`<input type="text" class="form-control" value="${currentfullname}">`);
+        fullnameElement.html(input1);
+        input1.focus();
+
+        const input2 = $(`<input type="text" class="form-control" value="${currentusername}">`);
+        usernameElement.html(input2);
+        input2.focus();
+        // เมื่อ input หลุด focus หรือกด Enter ให้บันทึก
+        
+        input1.blur(function () {
+            savefullname(id, input1.val(), fullnameElement);
+        }).keypress(function (event) {
+            if (event.which === 13) {
+                savefullname(id, input1.val(), fullnameElementt);
+                    }
+                });
+        input2.blur(function () {
+            saveusername(id, input2.val(), usernameElement);
+        }).keypress(function (event) {
+            if (event.which === 13) {
+                saveusername(id, input2.val(), usernameElementt);
+                    }
+                });
+
+                function savefullname(id, newFullname, newUsername, fullnameElement, usernameElement) {
+                const params = {
+                    type: 'edit-user',
+                    id: id,
+                    full_name: newfullname ,
+                    username : newusername
+                };
+                $.post("https://iwtc.pasitdev.com/api/test", params, function (data) {
+                    if (data.message == 'success') {
+                        fullnameElementt.text(newfullname);
+                        usernameElement.text(newusername);
+                        alert("แก้ไขข้อมูลรถสำเร็จ!");
+                    } else {
+                        fullnameElementt.text(fullnameElementt.find('input').val());
+                        usernameElement.text(usernameElement.find('input').val());
+                        alert("แก้ไขข้อมูลรถไม่สำเร็จ!");
+                    }
+                });
+            }
         });
+      
+
+    
+    })
+
+              
+           
+                
+
+
+        
             
     
     </script>
